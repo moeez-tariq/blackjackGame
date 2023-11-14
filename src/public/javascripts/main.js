@@ -6,11 +6,13 @@ const rankList = ['2', '3', '4', '5', '6', '7', '8', '9', '10','J', 'Q', 'K', 'A
 const suits = {SPADES: '♠️', HEARTS: '❤️', CLUBS: '♣️', DIAMONDS: '♦️'};
 const suitsNames = ['SPADES', 'HEARTS', 'CLUBS', 'DIAMONDS'];
 let deck = [];
+let playerBusted = false;
+let computerState = 'playing';
+let userStood = false;
 
 const bothHands = [[], []];
 
 function main() {
-    console.log("MAIN INITIATED")
     const form = document.querySelector('form');
     const submitButton = document.querySelector('.playBtn');
     submitButton.addEventListener('click', function (event) {
@@ -26,8 +28,6 @@ function main() {
         deck = shuffle(deck);
         
         if (cardFaces[0] !== '') {
-            console.log("Here");
-            console.log(cardFaces);
             for (let i = 0; i < cardFaces.length; i++) {
                 if (sameCount[cardFaces[i]] === undefined) {
                     sameCount[cardFaces[i]] = 0;
@@ -40,9 +40,18 @@ function main() {
             deck = [...topCards, ...deck]
         }
         dealCards();
+
+        const newDivs = ["computerTotal", "computerHands", "userTotal", "userHands"];
+        newDivs.forEach(function (divName) {
+            const makeNewDiv = document.createElement('div');
+            makeNewDiv.classList.add(divName);
+            document.querySelector('.game').appendChild(makeNewDiv);
+        });
+
         displayCards();
         displayButtons();
         calculateTotals();
+
     });
 }
 
@@ -77,17 +86,20 @@ function dealCards() {
 }
 
 function displayCards() {
-    const newDivs = ["computerTotal", "userTotal", "computerHands", "userHands"];
-    newDivs.forEach(function (divName) {
-        const makeNewDiv = document.createElement('div');
-        makeNewDiv.classList.add(divName);
-        document.querySelector('.game').appendChild(makeNewDiv);
-    });
+    document.querySelector('.computerHands').innerHTML = '';
+    document.querySelector('.userHands').innerHTML = '';
+
 
     for (let i = 0; i < bothHands.length; i++) {
         for (let j = 0; j < bothHands[i].length; j++) {
             if (i === 0 && j === 0) {
-                addCardToDiv(bothHands[i][j], '.computerHands', true);
+                if (userStood) {
+                    addCardToDiv(bothHands[i][j], '.computerHands', false);
+                }
+                else {
+                    addCardToDiv(bothHands[i][j], '.computerHands', true);
+                }
+                
             } else if (i === 0) {
                 addCardToDiv(bothHands[i][j], '.computerHands', false);
             }
@@ -97,27 +109,6 @@ function displayCards() {
         }
     }
 }
-
-
-// function addCardToDiv(card, parentDiv, isHidden) {
-//     const newCard = document.createElement('div');
-//     newCard.classList.add('card');
-
-//     const cardTopLeft= document.createElement('div')
-//     cardTopLeft.classList.add('cardTopLeft');
-//     cardTopLeft.innerHTML = card.rank + card.suit;
-//     newCard.appendChild(cardTopLeft);
-
-//     const cardBottomRight = document.createElement('div')
-//     cardBottomRight.classList.add('cardBottomRight');
-//     cardBottomRight.innerHTML = card.rank + card.suit;
-//     newCard.appendChild(cardBottomRight);
-
-//     if (isHidden) {
-//         newCard.classList.add('hiddenCard');
-//     }
-//     document.querySelector(parentDiv).appendChild(newCard);
-// }
 
 function addCardToDiv(card, parentDiv, isHidden) {
     const newCard = document.createElement('div');
@@ -145,5 +136,131 @@ function addCardToDiv(card, parentDiv, isHidden) {
     document.querySelector(parentDiv).appendChild(newCard);
 }
 
+function displayButtons() {
+    console.log("DISPLAY BUTTONS")
+    const buttonDiv = document.createElement('div');
+    buttonDiv.classList.add('buttons');
+
+    const hitButton = document.createElement('button');
+    hitButton.textContent = 'Hit';
+    hitButton.addEventListener('click', hit);
+
+    const standButton = document.createElement('button');
+    standButton.textContent = 'Stand';
+    standButton.addEventListener('click', stand);
+
+    buttonDiv.appendChild(hitButton);
+    buttonDiv.appendChild(standButton);
+
+    document.querySelector('.game').appendChild(buttonDiv);
+}
+
+function hit() {
+    const card = deck[0];
+    bothHands[1].push(card);
+    deck.shift();
+
+    displayCards();
+    calculateTotals();
+
+    if (calculateHandTotal(bothHands[1]) > 21) {
+        playerBusted = true;
+        stand();
+    }
+}
+
+function stand() {
+    userStood = true;
+    if (!playerBusted) {
+        while (calculateHandTotal(bothHands[0]) < calculateHandTotal(bothHands[1])) {
+            const card = deck[0];
+            bothHands[0].push(card);
+            deck.shift();
+        }
+    }
+
+    if (calculateHandTotal(bothHands[0]) > 21) {
+        computerState = 'busted';
+    } else if (calculateHandTotal(bothHands[0]) === calculateHandTotal(bothHands[1])) {
+        computerState = 'push';
+    } else if (calculateHandTotal(bothHands[0]) > calculateHandTotal(bothHands[1])) {
+        computerState = 'won';
+    } else if (playerBusted) {
+        computerState = 'won';
+    }
+
+    calculateTotals();
+    displayCards();
+    displayWinner();
+}
+
+function calculateTotals() {
+    const userTotalElement = document.querySelector('.userTotal');
+    const computerTotalElement = document.querySelector('.computerTotal');
+
+    const userTotal = calculateHandTotal(bothHands[1]);
+    const computerTotal = calculateHandTotal(bothHands[0]);
+
+    userTotalElement.textContent = `User Total: ${userTotal}`;
+    if (userStood) {
+        computerTotalElement.textContent = `Computer Total: ${computerTotal}`;
+    } else {
+        computerTotalElement.textContent = `Computer Total: ?`;
+    }
+}
+
+function calculateHandTotal(hand) {
+    let total = 0;
+    let aceCount = 0;
+
+    for (let i = 0; i < hand.length; i++) {
+        const cardValue = getCardValue(hand[i]);
+        total += cardValue;
+
+        if (hand[i].rank === 'A') {
+            aceCount++;
+        }
+    }
+
+    while (aceCount > 0 && total > 21) {
+        total -= 10;
+        aceCount--;
+    }
+
+    return total;
+}
+
+function getCardValue(card) {
+    if (card.rank === 'A') {
+        return 11; 
+    } else if (['K', 'Q', 'J'].includes(card.rank)) {
+        return 10;
+    } else {
+        return parseInt(card.rank, 10);
+    }
+}
+
+function displayWinner() {
+    const resultDiv = document.createElement('div');
+    resultDiv.classList.add('result');
+
+    if (computerState === 'busted') {
+        resultDiv.textContent = 'Computer Busted. You Win!';
+    } else if (computerState === 'push') {
+        resultDiv.textContent = 'It\'s a Push!';
+    } else if (computerState === 'won' && !playerBusted) {
+        resultDiv.textContent = 'Computer Wins!';
+    } else if (computerState === 'won' && playerBusted) {
+        resultDiv.textContent = 'You Busted. Computer Wins!';
+    }
+
+    document.querySelector('.game').appendChild(resultDiv);
+    
+    // Remove the buttons
+    const buttonsDiv = document.querySelector('.buttons');
+    if (buttonsDiv) {
+        buttonsDiv.remove();
+    }
+}
 
 document.addEventListener('DOMContentLoaded', main);

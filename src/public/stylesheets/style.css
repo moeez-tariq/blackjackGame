@@ -1,13 +1,33 @@
 .hidden {
     display: none;
-} 
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.computerTotal,
+.userTotal {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
 
 .card {
-    width: 100px;
-    height: 150px;
+    width: 150px;
+    height: 225px;
     border: 1px solid #000;
-    border-radius: 10px;
-    margin: 5px;
+    border-radius: 15px;
+    margin: 10px;
     position: relative;
     display: inline-block;
 }
@@ -20,45 +40,65 @@
     transition: transform 0.5s;
 }
 
-/* .card:hover .card-inner {
-    transform: rotateY(180deg);
-} */
-
 .card-corner {
     position: absolute;
-    font-size: 12px;
+    font-size: 16px;
     color: #000;
 }
 
 .top-left {
-    top: 5px;
-    left: 5px;
+    top: 10px;
+    left: 10px;
 }
 
 .bottom-right {
-    bottom: 5px;
-    right: 5px;
+    bottom: 10px;
+    right: 10px;
     transform: rotate(180deg);
 }
 
 .hiddenCard {
-    background-color: #888;
+    background: linear-gradient(
+        45deg,
+        #ff0000 25%,
+        #ffffff 25%,
+        #ffffff 50%,
+        #ff0000 50%,
+        #ff0000 75%,
+        #ffffff 75%,
+        #ffffff 100%
+    );
+    background-size: 30px 30px;
 }
 
-.rank, .suit {
+.rank,
+.suit {
     display: block;
 }
 
-.hiddenCard {
-    background: linear-gradient(45deg, #ff0000 25%, #ffffff 25%, #ffffff 50%, #ff0000 50%, #ff0000 75%, #ffffff 75%, #ffffff 100%);
-    background-size: 20px 20px;
-}
-
-.hiddenCard .rank {
-    display: none;
-}
-
-/* Styles for the suit of the hidden card */
+.hiddenCard .rank,
 .hiddenCard .suit {
     display: none;
+}
+
+.buttons {
+    text-align: center;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 20px;
+    margin: 5px;
+    font-size: 25px;
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border: 1px solid #4caf50;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: green;
+    color: black;
 }
