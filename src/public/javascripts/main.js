@@ -6,8 +6,8 @@ const rankList = ['2', '3', '4', '5', '6', '7', '8', '9', '10','J', 'Q', 'K', 'A
 const suits = {SPADES: '♠️', HEARTS: '❤️', CLUBS: '♣️', DIAMONDS: '♦️'};
 const suitsNames = ['SPADES', 'HEARTS', 'CLUBS', 'DIAMONDS'];
 let deck = [];
-const computerHand = [];
-const userHand = [];
+
+const bothHands = [[], []];
 
 function main() {
     console.log("MAIN INITIATED")
@@ -22,11 +22,12 @@ function main() {
         const sameCount = {}
         const topCards = [];
 
-        let preAddDeck;
-        preAddDeck = generateDeck();
-        preAddDeck = shuffle(deck);
+        deck = generateDeck();
+        deck = shuffle(deck);
         
-        if (cardFaces.length !== 0) {
+        if (cardFaces[0] !== '') {
+            console.log("Here");
+            console.log(cardFaces);
             for (let i = 0; i < cardFaces.length; i++) {
                 if (sameCount[cardFaces[i]] === undefined) {
                     sameCount[cardFaces[i]] = 0;
@@ -34,12 +35,14 @@ function main() {
                 else {
                     sameCount[cardFaces[i]] += 1;
                 }
-                console.log(sameCount[cardFaces[i]])
                 topCards.push({ suit: suits[suitsNames[sameCount[cardFaces[i]]]], rank: cardFaces[i] });
             }
-            deck = [...topCards, ...preAddDeck]
+            deck = [...topCards, ...deck]
         }
         dealCards();
+        displayCards();
+        displayButtons();
+        calculateTotals();
     });
 }
 
@@ -65,13 +68,82 @@ function dealCards() {
     for (let i = 0; i < 4; i++) {
         const card = deck[0];
         if (i % 2 === 0) {
-            computerHand.push(card);
+            bothHands[0].push(card);
         } else {
-            userHand.push(card);
+            bothHands[1].push(card);
         }
         deck.shift();
     }
 }
-  
+
+function displayCards() {
+    const newDivs = ["computerTotal", "userTotal", "computerHands", "userHands"];
+    newDivs.forEach(function (divName) {
+        const makeNewDiv = document.createElement('div');
+        makeNewDiv.classList.add(divName);
+        document.querySelector('.game').appendChild(makeNewDiv);
+    });
+
+    for (let i = 0; i < bothHands.length; i++) {
+        for (let j = 0; j < bothHands[i].length; j++) {
+            if (i === 0 && j === 0) {
+                addCardToDiv(bothHands[i][j], '.computerHands', true);
+            } else if (i === 0) {
+                addCardToDiv(bothHands[i][j], '.computerHands', false);
+            }
+            else if (i === 1) {
+                addCardToDiv(bothHands[i][j], '.userHands', false);
+            }
+        }
+    }
+}
+
+
+// function addCardToDiv(card, parentDiv, isHidden) {
+//     const newCard = document.createElement('div');
+//     newCard.classList.add('card');
+
+//     const cardTopLeft= document.createElement('div')
+//     cardTopLeft.classList.add('cardTopLeft');
+//     cardTopLeft.innerHTML = card.rank + card.suit;
+//     newCard.appendChild(cardTopLeft);
+
+//     const cardBottomRight = document.createElement('div')
+//     cardBottomRight.classList.add('cardBottomRight');
+//     cardBottomRight.innerHTML = card.rank + card.suit;
+//     newCard.appendChild(cardBottomRight);
+
+//     if (isHidden) {
+//         newCard.classList.add('hiddenCard');
+//     }
+//     document.querySelector(parentDiv).appendChild(newCard);
+// }
+
+function addCardToDiv(card, parentDiv, isHidden) {
+    const newCard = document.createElement('div');
+    newCard.classList.add('card');
+
+    const cardInner = document.createElement('div');
+    cardInner.classList.add('card-inner');
+
+    const cardTopLeft = document.createElement('div');
+    cardTopLeft.classList.add('card-corner', 'top-left');
+    cardTopLeft.innerHTML = `<span class="rank">${card.rank}</span><span class="suit">${card.suit}</span>`;
+    cardInner.appendChild(cardTopLeft);
+
+    const cardBottomRight = document.createElement('div');
+    cardBottomRight.classList.add('card-corner', 'bottom-right');
+    cardBottomRight.innerHTML = `<span class="rank">${card.rank}</span><span class="suit">${card.suit}</span>`;
+    cardInner.appendChild(cardBottomRight);
+
+    newCard.appendChild(cardInner);
+
+    if (isHidden) {
+        newCard.classList.add('hiddenCard');
+    }
+
+    document.querySelector(parentDiv).appendChild(newCard);
+}
+
+
 document.addEventListener('DOMContentLoaded', main);
-  

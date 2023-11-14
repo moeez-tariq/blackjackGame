@@ -1,3 +1,64 @@
 .hidden {
     display: none;
+} 
+
+.card {
+    width: 100px;
+    height: 150px;
+    border: 1px solid #000;
+    border-radius: 10px;
+    margin: 5px;
+    position: relative;
+    display: inline-block;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+}
+
+/* .card:hover .card-inner {
+    transform: rotateY(180deg);
+} */
+
+.card-corner {
+    position: absolute;
+    font-size: 12px;
+    color: #000;
+}
+
+.top-left {
+    top: 5px;
+    left: 5px;
+}
+
+.bottom-right {
+    bottom: 5px;
+    right: 5px;
+    transform: rotate(180deg);
+}
+
+.hiddenCard {
+    background-color: #888;
+}
+
+.rank, .suit {
+    display: block;
+}
+
+.hiddenCard {
+    background: linear-gradient(45deg, #ff0000 25%, #ffffff 25%, #ffffff 50%, #ff0000 50%, #ff0000 75%, #ffffff 75%, #ffffff 100%);
+    background-size: 20px 20px;
+}
+
+.hiddenCard .rank {
+    display: none;
+}
+
+/* Styles for the suit of the hidden card */
+.hiddenCard .suit {
+    display: none;
 }
