@@ -122,6 +122,11 @@ function addCardToDiv(card, parentDiv, isHidden) {
     cardTopLeft.innerHTML = `<span class="rank">${card.rank}</span><span class="suit">${card.suit}</span>`;
     cardInner.appendChild(cardTopLeft);
 
+    const cardMiddle = document.createElement('div');
+    cardMiddle.classList.add('card-middle');
+    cardMiddle.innerHTML = `<span class="suit">${card.suit}</span>`;
+    cardInner.appendChild(cardMiddle);
+
     const cardBottomRight = document.createElement('div');
     cardBottomRight.classList.add('card-corner', 'bottom-right');
     cardBottomRight.innerHTML = `<span class="rank">${card.rank}</span><span class="suit">${card.suit}</span>`;
@@ -256,7 +261,6 @@ function displayWinner() {
 
     document.querySelector('.game').appendChild(resultDiv);
     
-    // Remove the buttons
     const buttonsDiv = document.querySelector('.buttons');
     if (buttonsDiv) {
         buttonsDiv.remove();
