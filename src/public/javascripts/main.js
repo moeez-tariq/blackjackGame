@@ -142,6 +142,71 @@ function calculateTotals() {
     }
 }
 
+async function saveGameResult(event) {
+    event.preventDefault();
+
+    const userInitials = event.target.elements.userInitials.value;
+    const userScore = calculateHandTotal(bothHands[1]);
+    const computerScore = calculateHandTotal(bothHands[0]);
+
+    await fetch('/save-game-result', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userInitials, userScore, computerScore }),
+    });
+    
+    // eslint-disable-next-line
+    showGameHistory();
+}
+
+async function showGameHistory() {
+    const gameHistory = await fetch('/game-history').then(res => res.json());
+    document.body.innerHTML = '';
+
+    const wrapperContainer = document.createElement('div');
+    wrapperContainer.classList.add('wrapper-container');
+
+    const formContainer = document.createElement('div');
+    formContainer.classList.add('initials-form');
+
+    const initialsForm = document.createElement('form');
+    initialsForm.addEventListener('submit', saveGameResult);
+
+    const initialsLabel = document.createElement('label');
+    initialsLabel.textContent = 'Enter Your Initials: ';
+
+    const initialsInput = document.createElement('input');
+    initialsInput.setAttribute('type', 'text');
+    initialsInput.setAttribute('name', 'userInitials');
+
+    const submitInitialsButton = document.createElement('input');
+    submitInitialsButton.setAttribute('type', 'submit');
+    submitInitialsButton.setAttribute('value', 'Submit');
+    submitInitialsButton.classList.add('submit-button');
+
+    initialsForm.appendChild(initialsLabel);
+    initialsForm.appendChild(initialsInput);
+    initialsForm.appendChild(submitInitialsButton);
+
+    formContainer.appendChild(initialsForm);
+
+    wrapperContainer.appendChild(formContainer);
+
+    const historyContainer = document.createElement('div');
+    historyContainer.classList.add('history-container');
+
+    gameHistory.forEach(result => {
+        const resultDiv = document.createElement('div');
+        resultDiv.textContent = `User: ${result.userInitials}, Computer: ${result.computerScore}, User Score: ${result.userScore}`;
+        historyContainer.appendChild(resultDiv);
+    });
+
+    wrapperContainer.appendChild(historyContainer);
+    document.body.appendChild(wrapperContainer);
+}
+
 
 function displayWinner() {
     const resultDiv = document.createElement('div');
@@ -158,6 +223,11 @@ function displayWinner() {
     }
 
     document.querySelector('.game').appendChild(resultDiv);
+
+    const historyButton = document.createElement('button');
+    historyButton.textContent = 'Show History';
+    historyButton.addEventListener('click', showGameHistory);
+    document.querySelector('.game').appendChild(historyButton);
     
     const buttonsDiv = document.querySelector('.buttons');
     if (buttonsDiv) {

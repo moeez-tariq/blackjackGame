@@ -171,3 +171,50 @@ input[type="text"] {
     padding: 10px;
     border-radius: 5px;
 }
+
+/* .initials-form {
+    text-align: center;
+    margin-top: 20px;
+} */
+
+/* .history-container { */
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    /* border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+    align-self: flex-end;
+} */
+
+.wrapper-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.initials-form,
+.history-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.history-container {
+    margin-top: 20px;
+    font-size: 30px;
+}
+
+.submit-button {
+    padding: 15px 30px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: 15px;
+}
+
+.submit-button:hover {
+    background-color: green;
+}
